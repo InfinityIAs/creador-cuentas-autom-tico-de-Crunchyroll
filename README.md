@@ -19,7 +19,7 @@ Control de errores y cierre del navegador: El navegador se cierra correctamente 
 
 Personalización de la URL: Actualmente, el formulario de registro está configurado para la URL de Crunchyroll. Si deseas usar este código para otra página, debes modificar la URL en la función fill_registration_form().
 
-esta es una versior editada del codigo original
+Esta es una version editada del codigo original
 
 Autor original
 
