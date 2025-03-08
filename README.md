@@ -1,4 +1,7 @@
 # creador-cuentas-autom-tico-de-Crunchyroll
+
+creador cuentas-automatico de Crunchyroll
+
 Notas e instrucciones:
 
 Se nesesitan los siguentes repositorios instalados: undetected-chromedriver y selenium
