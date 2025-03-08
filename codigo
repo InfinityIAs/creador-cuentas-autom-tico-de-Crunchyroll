@@ -1,0 +1,133 @@
+import undetected_chromedriver as uc
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException, NoSuchElementException, WebDriverException
+import time
+import logging
+import secrets
+import string
+
+# Configuración de logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+# Función para generar una contraseña segura
+def generate_password(length=16):
+    # Usa caracteres alfanuméricos y símbolos para generar la contraseña
+    alphabet = string.ascii_letters + string.digits + string.punctuation
+    password = ''.join(secrets.choice(alphabet) for _ in range(length))
+    return password
+
+# Función para obtener un correo temporal
+def get_temp_email():
+    """Genera un correo temporal. Se recomienda usar un servicio como Mailinator."""
+    # Cambia esta línea por el servicio que elijas para correos temporales
+    email = f"temp{secrets.randbelow(100000)}@mailinator.com"
+    logging.info(f"Correo temporal generado: {email}")
+    return email
+
+# Función para guardar las cuentas creadas en un archivo .txt
+def save_account_to_file(email, password):
+    """Guarda el correo y la contraseña en un archivo .txt."""
+    try:
+        with open("cuentas_creadas.txt", "a") as file:
+            file.write(f"{email}:{password}\n")
+        logging.info(f"Cuenta guardada correctamente: {email}:{password}")
+    except Exception as e:
+        logging.error(f"Error al guardar la cuenta: {e}")
+
+# Configuración de navegador
+def setup_driver():
+    """Configura y devuelve el driver de Chrome."""
+    options = uc.ChromeOptions()
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
+    options.add_argument('--disable-gpu')
+    options.add_argument('--disable-extensions')
+
+    try:
+        driver = uc.Chrome(options=options)
+        logging.info("Navegador iniciado correctamente")
+        return driver
+    except WebDriverException as e:
+        logging.error(f"Error al iniciar el navegador: {e}")
+        raise
+
+def fill_registration_form(driver, email, password):
+    """Rellena el formulario de registro con correo y contraseña."""
+    try:
+        # Navega a la página de registro
+        driver.get("https://sso.crunchyroll.com/es/register")
+        logging.info("Página de registro cargada correctamente")
+
+        # Rellena el campo de correo electrónico
+        email_field = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.XPATH, "//input[@type='email']"))
+        )
+        email_field.send_keys(email)
+        logging.info("Campo de correo electrónico rellenado correctamente")
+
+        # Rellena el campo de contraseña
+        password_field = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.XPATH, "//input[@type='password']"))
+        )
+        password_field.send_keys(password)
+        logging.info("Campo de contraseña rellenado correctamente")
+
+        # Clic en el botón de registro
+        register_button = WebDriverWait(driver, 30).until(
+            EC.element_to_be_clickable((By.XPATH, "//button[@type='submit']"))
+        )
+        register_button.click()
+        logging.info("Botón de registro clicado correctamente")
+
+    except TimeoutException:
+        logging.error("Tiempo de espera agotado")
+    except NoSuchElementException:
+        logging.error("Elemento no encontrado")
+    except WebDriverException as e:
+        logging.error(f"Error al rellenar el formulario: {e}")
+
+def verify_account_creation(driver):
+    """Verifica si la cuenta fue creada correctamente buscando el mensaje de verificación."""
+    try:
+        # Busca el mensaje de verificación de correo usando las clases de la etiqueta <p>
+        WebDriverWait(driver, 20).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "p.broadcast-message__message---RtQ-.broadcast-message__message--is-spaced--70lM9"))
+        )
+        logging.info("Cuenta creada correctamente, mensaje de verificación encontrado.")
+        return True
+    except TimeoutException:
+        logging.error("No se encontró el mensaje de verificación. La cuenta no se creó correctamente.")
+        return False
+
+if __name__ == "__main__":
+    # Datos de registro
+    email = get_temp_email()  # Genera un correo temporal
+    password = generate_password()  # Genera una contraseña segura automáticamente
+
+    driver = None
+    try:
+        driver = setup_driver()
+
+        fill_registration_form(driver, email, password)
+        
+        # Verifica si la cuenta fue creada correctamente
+        if verify_account_creation(driver):
+            # Si la cuenta fue creada correctamente, guarda la cuenta en un archivo de texto
+            save_account_to_file(email, password)
+        else:
+            logging.error("No se pudo crear la cuenta correctamente.")
+        
+        # Espera unos segundos para observar el resultado
+        time.sleep(5)
+
+    except Exception as e:
+        logging.error(f"Error: {e}")
+    finally:
+        if driver:
+            try:
+                driver.quit()  # Cierra el navegador correctamente
+            except Exception as e:
+                logging.error(f"Error al cerrar el navegador: {e}")
+        logging.info("Navegador cerrado.")
