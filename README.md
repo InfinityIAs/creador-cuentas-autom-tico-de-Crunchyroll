@@ -1,6 +1,10 @@
 # creador-cuentas-autom-tico-de-Crunchyroll
 Notas e instrucciones:
 
+Se nesesitan los siguentes repositorios instalados: undetected-chromedriver y selenium
+
+Para intalar copia en el terminal: pip install undetected-chromedriver selenium
+
 Correo temporal: El código genera un correo temporal utilizando un servicio como Mailinator. Si deseas usar otro servicio, puedes modificar la función get_temp_email().
 
 Generación de contraseñas seguras: La función generate_password() crea contraseñas seguras utilizando una combinación de letras, números y caracteres especiales. Puedes ajustar la longitud si lo prefieres.
@@ -14,3 +18,9 @@ Verificación de la creación de la cuenta: El código verifica si la cuenta se 
 Control de errores y cierre del navegador: El navegador se cierra correctamente al final, incluso si ocurren errores. El bloque finally asegura que driver.quit() se ejecute para cerrar el navegador.
 
 Personalización de la URL: Actualmente, el formulario de registro está configurado para la URL de Crunchyroll. Si deseas usar este código para otra página, debes modificar la URL en la función fill_registration_form().
+
+esta es una versior editada del codigo original
+
+Autor original
+
+https://github.com/RealStrategy/BOT-AUTOMATIC/tree/main
