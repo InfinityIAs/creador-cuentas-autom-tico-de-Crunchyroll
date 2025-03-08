@@ -1,5 +1,6 @@
 # creador-cuentas-autom-tico-de-Crunchyroll
 Notas e instrucciones:
+
 Correo temporal: El código genera un correo temporal utilizando un servicio como Mailinator. Si deseas usar otro servicio, puedes modificar la función get_temp_email().
 
 Generación de contraseñas seguras: La función generate_password() crea contraseñas seguras utilizando una combinación de letras, números y caracteres especiales. Puedes ajustar la longitud si lo prefieres.
